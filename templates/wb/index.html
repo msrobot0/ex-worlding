@@ -1,0 +1,52 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Forms {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="py-4">
+     
+      <div class="d-flex justify-content-between w-100 flex-wrap">
+          <div class="mb-3 mb-lg-0">
+              <h1 class="h4">Poetry World Building: Pick a World</h1>
+              <p class="mb-0">An implementation of <a href="https://www.youtube.com/watch?v=3m6o4Vg_SZg">Ed Steck's poetic world building process.</a> </p>
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <div class="col-12 mb-4">
+          <div class="card border-0 shadow components-section">
+              <div class="card-body">     
+                  <div class="row mb-4">
+                      <div class="col-lg-4 col-sm-6">
+                          <!-- Form -->
+                          <div class="mb-4">
+                              <select class="form-select" id="country" aria-label="Default select example">
+                                  <option selected>Select a world</option>
+                                  {% for i in worlds %}
+                                        <option value="{{i}}">{{worlds[i]}}</option>
+                                  {% endfor %}
+
+                              </select>
+                          </div>
+                          
+                      </div>
+                  </div>
+                  <div class="row mb-4">
+                    <div class="col-lg-4 col-sm-6">
+                       <a class="nav-link mb-sm-3 mb-md-0 {{gen=='generate' and 'active'}}"  href="/generate/new/">Create a New World</a>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
