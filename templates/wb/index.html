@@ -18,27 +18,50 @@
   </div>
 
   <div class="row">
-      <div class="col-12 mb-4">
+      <div class="col-8 mb-4">
           <div class="card border-0 shadow components-section">
               <div class="card-body">     
                   <div class="row mb-4">
                       <div class="col-lg-4 col-sm-6">
                           <!-- Form -->
                           <div class="mb-4">
-                              <select class="form-select" id="country" aria-label="Default select example">
+                              <select class="form-select" id="country" aria-label="Default select example" onchange="this.options[this.selectedIndex].value && (window.location='/world/'+this.options[this.selectedIndex].value);">
                                   <option selected>Select a world</option>
                                   {% for i in worlds %}
                                         <option value="{{i}}">{{worlds[i]}}</option>
                                   {% endfor %}
 
                               </select>
+                               <a class="btn btn-primary" type="button" href="/generate/new/">Populate World</a>
                           </div>
-                          
-                      </div>
+                        </div>
+                     
                   </div>
-                  <div class="row mb-4">
-                    <div class="col-lg-4 col-sm-6">
-                       <a class="nav-link mb-sm-3 mb-md-0 {{gen=='generate' and 'active'}}"  href="/generate/new/">Create a New World</a>
+                  <div class="row">
+                    <div class="col-lg-8">
+                       <div class="mb-4">
+                          <h3>Create a new world</h3>
+                      </div>
+                    </div>
+                  </div>
+                       <div class="mb-1">
+                              <label for="category">Category</label>
+                              <input type="text" class="form-control" id="category" aria-describedby="categoryHelp">
+                              <small id="emailHelp" class="form-text text-muted">animals, climates, locations, objects... etc</small>
+                          </div>
+                      
+
+                         
+                    
+
+                          <div class="mb-4">
+                              <label for="category">Options</label>
+                              <input type="text" class="form-control" id="options" aria-describedby="optionHelp">
+                              <small id="optionHelp" class="form-text text-muted">4 animals, 8 climates- make it less than 50</small>
+                          </div>
+                      <a class="btn btn-primary" type="button" href="/generate/new/">Generate</a>
+                      </div>
+
                     </div>
                   </div>
               </div>
