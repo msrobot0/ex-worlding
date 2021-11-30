@@ -1,10 +1,35 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} UI Forms {% endblock %} 
+
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
-
+{% block script %}
+<script>
+  var c = 2;
+  function add(){
+    if (c == 2){
+      $("#addcat"+c).removeClass("hide");
+    }else{
+      let $newitem = $("#addcat2").clone();
+      let oldc = c-1;
+      console.log(oldc);
+      //newitem.find("category2").attr(id,"category"+c);
+      $newitem.attr("id","addcat"+c);
+      $newitem.find("#category2").val("");
+      $newitem.find("#options2").val("");
+      $newitem.find("#category2").attr("name","category"+c);
+      $newitem.find("#options2").attr("name","options"+c);
+      
+      $newitem.find("#category2").attr("id","category"+c);
+      $newitem.find("#options2").attr("id","options"+c);
+            $newitem.insertAfter($("#addcat"+oldc));
+     
+    }
+    c += 1; 
+  }
+</script>
+{% endblock script %}
 {% block content %}
 
   <div class="py-4">
@@ -12,7 +37,7 @@
       <div class="d-flex justify-content-between w-100 flex-wrap">
           <div class="mb-3 mb-lg-0">
               <h1 class="h4">Poetry World Building: Pick a World</h1>
-              <p class="mb-0">An implementation of <a href="https://www.youtube.com/watch?v=3m6o4Vg_SZg">Ed Steck's poetic world building process.</a> </p>
+              <p class="mb-0">A creative implementation of <a href="https://www.youtube.com/watch?v=3m6o4Vg_SZg">Ed Steck's poetic world building process.</a> </p>
           </div>
       </div>
   </div>
@@ -25,6 +50,7 @@
                       <div class="col-lg-4 col-sm-6">
                           <!-- Form -->
                           <div class="mb-4">
+                             Populate Existing World
                               <select class="form-select" id="country" aria-label="Default select example" onchange="this.options[this.selectedIndex].value && (window.location='/world/'+this.options[this.selectedIndex].value);">
                                   <option selected>Select a world</option>
                                   {% for i in worlds %}
@@ -32,38 +58,72 @@
                                   {% endfor %}
 
                               </select>
-                               <a class="btn btn-primary" type="button" href="/generate/new/">Populate World</a>
+                               
+                          </div>
+                      </div>
+                  </div> 
+                  <form method="post" action="/world/new/">
+                    <div class="row">
+                      <div class="col-lg-8">
+                         <div class="mb-4">
+                            <h3>Create a new world</h3>
+                            <label for="category">World Name</label>
+                                <input type="text" class="form-control" name="name" id="name" placeholder="Middle Earth">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="row" id="addcat1">
+                      <div class="col-lg-4">
+                         <div class="mb-1">
+                                <label for="category">Category</label>
+                                <input type="text" class="form-control" name="category1" id="category1" aria-describedby="categoryHelp">
+                                <small id="help" class="form-text text-muted">animals, climates, locations, objects... etc</small>
                           </div>
                         </div>
-                     
-                  </div>
-                  <div class="row">
-                    <div class="col-lg-8">
-                       <div class="mb-4">
-                          <h3>Create a new world</h3>
+                        <div class="col-lg-2">
+                            <div class="mb-2">
+                                <label for="category">Options</label>
+                                <input name="options1" type="number" class="form-control" id="options1" aria-describedby="optionHelp">
+                                <small id="optionHelp" class="form-text text-muted">A number: 4, 8, how many types of the category you will have</small>
+                            </div>
+                           
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                       <div class="mb-1">
-                              <label for="category">Category</label>
-                              <input type="text" class="form-control" id="category" aria-describedby="categoryHelp">
-                              <small id="emailHelp" class="form-text text-muted">animals, climates, locations, objects... etc</small>
+                      <div class="row hide" id="addcat2">
+                      <div class="col-lg-4">
+                         <div class="mb-1">
+                                <input type="text" name="category2" class="form-control" id="category2" aria-describedby="categoryHelp">
+                                
                           </div>
+                        </div>
                       
-
-                         
-                    
-
-                          <div class="mb-4">
-                              <label for="category">Options</label>
-                              <input type="text" class="form-control" id="options" aria-describedby="optionHelp">
-                              <small id="optionHelp" class="form-text text-muted">4 animals, 8 climates- make it less than 50</small>
-                          </div>
-                      <a class="btn btn-primary" type="button" href="/generate/new/">Generate</a>
+                        <div class="col-lg-2">
+                            <div class="mb-2">
+                                <input type="number" name="options2" class="form-control" id="options2" aria-describedby="optionHelp">                            
+                            </div>
+                           
+                        </div>
                       </div>
+                      <div class="row">
+                        <div class="col-lg-8">
+                          <div class="mb-1">
 
+                                 <button class="btn btn-success" type="button"  onclick="add()">Add Another Category </button>
+                          </div>
+                        </div>
+                      </div>
+                        
+                      <div class="row">
+                        <div class="col-lg-8">
+                          <div class="mb-1">
+
+                            <button class="btn btn-primary" type="submit" ">Generate</button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </form>
               </div>
           </div>
       </div>
