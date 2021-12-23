@@ -113,7 +113,7 @@ def newworld(world_id):
         db.session.add(world)
         db.session.commit()
         id = world.id
-     else:   
+    else:   
         try:
             world = Populate.query.get(world_id)
         except:
