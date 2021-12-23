@@ -47,27 +47,7 @@
   src="https://code.jquery.com/jquery-3.6.0.min.js"
   integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
   crossorigin="anonymous"></script>
-  <script
-  src="/static/assets/index.js"
-  ></script>
-
-<script>  
-window.onload = function(){
-const Web3Modal = window.Web3Modal.default;
-const providerOptions = {
-  /* See Provider Options Section */
-};
-
-const web3Modal = new Web3Modal({
-  network: "mainnet", // optional
-  cacheProvider: true, // optional
-  providerOptions // required
-});
-
-//const provider = await web3Modal.connect();
-alert("2");
-}
-</script>
+  <script src="https://d3js.org/d3.v4.js"></script>
 <!-- Specific Page JS goes HERE  -->    
 {% block stylesheets %}{% endblock stylesheets %}
 {% block script %}{% endblock script %}

@@ -1084,7 +1084,7 @@ button,
   border-style: none; }
 
 textarea {
-  resize: vertical; }
+  resize: none; }
 
 fieldset {
   min-width: 0;

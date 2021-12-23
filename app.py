@@ -84,42 +84,57 @@ def generate(request):
     return id
 
 
+
 @app.route("/populate/<world_id>/", methods=['GET', 'POST'])
 def newworld(world_id):
     resdata ={}
-    
+    gen = "hi"
+    name=  ""
+    config = {}
     if request.method == 'POST': 
-        newdata ={"cat":{},"all":{}} 
+        newdata ={"world":{},"all":[]} 
         data = request.form
         name= request.form["name"] or "untitled world from %s" % world_id
-        print(data)
-        print(data.keys())
+        print (data)
         for d in data.keys():
             if len(data[d]) > 0:
-                if d[0] == "i":
-                    n = d[2:len(d)]
-                    option = n.split("_")[0]
-                    pb1= data["c_%s" % option]
-                    pb2= data["pb_%s" % n]
-                    if pb1 not in newdata["cat"]:
-                        newdata["cat"][pb1] =[]
-                    if pb2 not in newdata["all"]:
-                        newdata["all"][pb2] =[]   
-                    val = {data["c_%s" % option]:data[d]}    
-                    newdata["cat"][pb1].append(val)
-                    newdata["all"][pb2].append(val)
+                if d[0] == "c":
+                    new_group = {}
+                    names = d.split("_")
+                    cat = names[1]
+                    items = int(names[-1])
+                    pb =data["pb_%s_0" % cat]
+                    for i in range(0,items):
+                        new_group= {"cat":cat,"items":items,"pb":pb,"item":data["i_%s_%s"%(cat,i)],"itempb":data["pb_%s_%s"%(cat,i)]}
+                        newdata["all"].append(new_group)
+                        print("") 
+                        print(new_group)
+                        print("")
+                        print("pb")
+                        if pb not in newdata["world"]:
+                            newdata["world"][pb] = []
+                        newdata["world"][pb].append(new_group)
                         
         world = Populate(name=name, world_id=world_id,config=newdata,creator="")
         db.session.add(world)
         db.session.commit()
         id = world.id
+        print(id)
     else:   
         try:
             world = Populate.query.get(world_id)
+
+            if world is None:
+                index()
+            name = World.query.get(world.world_id).name
         except:
             index()
+    if world is None:
+            index()
+    print(world)
+    print(world.config)
     return render_template(
-        'wb/popworld.html', name=name,config=world.config, world_id=world.world_id)
+        'wb/popworld.html', gen=gen, name="name",config=world.config, world_id=world.world_id)
     
 
 @app.route("/story/<populate_id>/")
@@ -145,7 +160,7 @@ def story(populate_id):
         db.session.commit()
     else:
         try:
-            w = Writing.query.get(populate_id)
+            world = Writing.query.get(populate_id)
         except:
             index()
     return render_template(
@@ -164,7 +179,7 @@ def getWorlds(id):
     gen = {"id":w.id,"name":w.name,"data":w.config, "cat":", ".join(list(w.config.keys()))}
         
     return render_template(
-    'wb/genworld.html',name=name, gen=gen)
+    'wb/genworld.html',name=name, gen=gen,allworlds=[])
 
 if __name__ == "__main__":
     #   db.create_all() 

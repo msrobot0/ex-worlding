@@ -14,7 +14,9 @@
      max = {{max}};
      r = Math.floor((Math.random() * max)+1);
      $("#c_{{w}}").val(r);
+
      $("#ct_{{w}}").text(r);
+    
     {% for i in range(max) %}
     r = Math.floor((Math.random() * max)+1);
     
@@ -31,16 +33,6 @@
 {% endblock script %}
 {% block content %}
 
-  <div class="py-4">
-    
-      <div class="d-flex justify-content-between w-100 flex-wrap">
-          <div class="mb-3 mb-lg-0">
-              <h1 class="h4">World "{{name}}"</h1>
-              <p class="mb-0">Populating a world with {{gen.cat}}</p>
-          </div>
-          
-      </div>
-  </div>
 
   <div class="row">
     <form method="post" action="/populate/{{gen.id}}/" name="form">
@@ -50,8 +42,9 @@
               
                   <div class="row mb-8">
                      <div class="col-lg-6">
-                        <label for="email">Name </label>
-                        <input type="text" class="form-control" value="{{gen.name}}-World" id="name" name="name">
+                      <h2>Populate the world</h2>
+                        <!-- <label for="email">Name </label> --->
+                        <input type="hidden" class="form-control" value="{{gen.name}}-World" id="name" name="name"/>
                         <br>
                         
                       </div>
@@ -59,7 +52,7 @@
                           <!-- Form -->
                           {% for w in gen.data.keys() %}
                           {% set max = gen.data[w] | int %}
-                            <input type="hidden" name="c_{{w}}" value="">
+                            <input type="hidden" name="c_{{w}}_{{max}}" id="c_{{w}}" value="">
                              <div class="input-group">
                               <label >{{max}} {{w}}</label> ->
                               <span  id="ct_{{w}}" name="ct_{{w}}"> # 
@@ -70,7 +63,7 @@
                               {% for i in range(max) %}
                                <div class="input-group">
                                 <input type="text" class="form-control" id="i_{{w}}_{{i}}" name="i_{{w}}_{{i}}"><br>
-                                <input type="hidden" name="pb_{{w}}_{{i}}"><br>
+                                <input type="hidden" name="pb_{{w}}_{{i}}" id="pb_{{w}}_{{i}}"><br>
                                   <span class="input-group-text" id="p_{{w}}_{{i}}" name="p_{{w}}_{{i}}">
                                       #
                                   </span>

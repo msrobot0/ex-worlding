@@ -32,15 +32,7 @@
 {% endblock script %}
 {% block content %}
 
-  <div class="py-4">
-     
-      <div class="d-flex justify-content-between w-100 flex-wrap">
-          <div class="mb-3 mb-lg-0">
-              <h1 class="h4">Poetry World Building: Pick a World</h1>
-              <p class="mb-0">A creative implementation of <a href="https://www.youtube.com/watch?v=3m6o4Vg_SZg">Ed Steck's poetic world building process.</a> </p>
-          </div>
-      </div>
-  </div>
+
 
   <div class="row">
       <div class="col-8 mb-4">
@@ -49,7 +41,7 @@
                   <div class="row mb-4">
                       <div class="col-lg-4 col-sm-6">
                           <!-- Form -->
-                          <div class="mb-4">
+<!--                          <div class="mb-4">
                              Populate Existing World
                               <select class="form-select" id="country" aria-label="Default select example" onchange="this.options[this.selectedIndex].value && (window.location='/world/'+this.options[this.selectedIndex].value);">
                                   <option selected>Select a world</option>
@@ -59,7 +51,7 @@
 
                               </select>
                                
-                          </div>
+                          </div>-->
                       </div>
                   </div> 
                   <form method="post" action="/world/new/">
@@ -83,9 +75,9 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="mb-2">
-                                <label for="category">Options</label>
+                                <label for="category">Items</label>
                                 <input name="options1" type="number" class="form-control" id="options1" aria-describedby="optionHelp">
-                                <small id="optionHelp" class="form-text text-muted">A number: 4, 8, how many types of the category you will have</small>
+                                <small id="optionHelp" class="form-text text-muted">The number of items in your category (e.g.  4 plants).</small>
                             </div>
                            
                         </div>
