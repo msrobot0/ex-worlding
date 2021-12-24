@@ -15,18 +15,15 @@
           <div class="card border-0 shadow components-section">
               <div class="card-body">     
                   <div class="row mb-4">
-                      <div class="col-lg-4 col-sm-6">
-                          <table><tr>
+                      <div class="col-lg-12 col-sm-6">
+                       
                           {% for w in allworlds.keys() %}
-                          <td> <a href="/world/{{w}}" class="link-success">{{allworlds[w]["name"]}}</a></td>
+                       <div>
+                          From <a href="/populate/{{w}}" class="link-info">{{allworlds[w]["name"]}}</a> Read: {% for s in allworlds[w]["stories"] %}<a href="/read/{{s["id"]}}" class="link-success">{{s.name}}</a>{%- if not loop.last %}, {%endif%}{% endfor %}
+
+                        </div>
                           {% endfor %}
-                          {% for w in allworlds.keys() %}
-                          <tr>
-                          {% for s in w["stories"] %}
-                          <td valign="top"> <a href="/read/{{s["id"]}}" class="link-success">{{s.name}}</a></td>
-                          {% endfor %}
-                        </tr>
-                          {% endfor %}
+                        
                           </table>
                           <!-- Form -->
 <!--                          <div class="mb-4">

@@ -48,6 +48,7 @@ def new_world():
     gen = "read"
     name ="read"
     data = request.form
+    newdata = {}
     name= request.form["name"] or "untitled"
     for d in data.keys():
         if len(data[d]) > 0:
@@ -62,17 +63,19 @@ def new_world():
     db.session.add(world)
     db.session.commit()
     world_id = world.id
-      
+    print(world_id)  
     name = world.name
     gen = {"id":world.id,"name":world.name,"data":world.config, "cat":", ".join(list(world.config.keys()))}
         
     return render_template(
     'wb/genworld.html',name=name, gen=gen,allworlds=[])
 
-@app.route("/world/<world_id>", methods=['GET'])
-def get_world(id):
+@app.route("/world/<world_id>/", methods=['GET'])
+def get_world(world_id):
     gen = "read"
     name ="read"
+    print("hi");
+    print(world_id)
     resdata ={}
     w = World.query.get(world_id)
     name = w.name
@@ -108,10 +111,10 @@ def new_populated_world():
         world = Populate(name=name, world_id=world_id,config=newdata,creator="")
         db.session.add(world)
         db.session.commit()
-        id = world.id
-        name = World.query.get(id).name    
+        
+        name = World.query.get(world_id).name    
         return render_template(
-        'wb/popworld.html', gen=gen, name=name,config=world.config, populate_id=world.id,world_id=id)
+        'wb/popworld.html', gen=gen, name=name,config=world.config, populate_id=world.id,world_id=world_id)
 
 
 @app.route("/populate/<world_id>/", methods=['GET'])
@@ -132,16 +135,17 @@ def new_story():
         populate_id = data["populate_id"]
         color1 = data["color1"]
         color2 = data["color2"]
-        world_id = data["world_id"]
-        config = Populate.query.get(populate_id).config
+        
+        populate = Populate.query.get(populate_id)
+        config = populate.config
         name= " ".join(story[:25].split(" ")[0:-2])
-        world = Writing(name=name, populate_id=populate_id,config={"world_id":world_id,"color1":color1,"color2":color2,"config":config},creator="",story=story)
+        world = Writing(name=name, populate_id=populate_id,config={"world_id":populate.world_id,"color1":color1,"color2":color2,"config":config},creator="",story=story)
         populate_id = world.id
         db.session.add(world)
         db.session.commit()
         name = world.name
         return render_template(
-    'wb/worlds.html', name=name,gen=gen,config=world.config,story=world.story)
+    'wb/worlds.html', name=name,gen=gen,config=world.config,story=world.story,populate_id=world.populate_id)
 
 
 @app.route("/story/<populate_id>/", methods=["GET"])

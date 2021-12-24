@@ -18254,11 +18254,13 @@ label {
   height: 3px;
   width: 120px;
   margin: 0; }
-
+td{ 
+padding:20px; }
 .table td,
 .table th {
   font-size: 0.875rem;
-  white-space: nowrap; }
+  white-space: nowrap; 
+  }
 
 .table.user-table thead th {
   border-top: 0; }
