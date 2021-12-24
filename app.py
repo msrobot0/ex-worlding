@@ -41,12 +41,35 @@ class Writing(db.Model):
 def index():
     gen = "index"
     name = "index"
+    return render_template('wb/index.html',worlds={}, name=name,gen=gen) #build world or #choose world
+
+@app.route("/world/", methods=['POST'])
+def new_world():
+    gen = "read"
+    name ="read"
     resdata ={}
-    worlds = World.query.all()
-    
-    for w in worlds:
-            resdata[w.id] = w.name
-    return render_template('wb/index.html',worlds=resdata, name=name,gen=gen) #build world or #choose world
+    if (id == "new"):
+        id =generate(request)
+    w = World.query.get(id)
+    name = w.name
+    gen = {"id":w.id,"name":w.name,"data":w.config, "cat":", ".join(list(w.config.keys()))}
+        
+    return render_template(
+    'wb/genworld.html',name=name, gen=gen,allworlds=[])
+
+@app.route("/world/<world_id>", methods=['GET', 'POST'])
+def get_world(id):
+    gen = "read"
+    name ="read"
+    resdata ={}
+    if (id == "new"):
+        id =generate(request)
+    w = World.query.get(id)
+    name = w.name
+    gen = {"id":w.id,"name":w.name,"data":w.config, "cat":", ".join(list(w.config.keys()))}
+        
+    return render_template(
+    'wb/genworld.html',name=name, gen=gen,allworlds=[])
 
 @app.route("/populate/", methods=['POST'])
 def new_populated_world():
