@@ -35,7 +35,8 @@
 
 
   <div class="row">
-    <form method="post" action="/populate/{{gen.id}}/" name="form">
+    <form method="post" action="/populate/" name="form">
+      <input type="hidden" value="{{gen.id}}" name="world_id"/>
       <div class="col-12 mb-4">
           <div class="card border-0 shadow components-section">
               <div class="card-body">     

@@ -1,0 +1,54 @@
+{% extends "layouts/base.html" %}
+
+
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+{% block script %}
+{% endblock script %}
+{% block content %}
+
+
+
+  <div class="row">
+      <div class="col-8 mb-4">
+          <div class="card border-0 shadow components-section">
+              <div class="card-body">     
+                  <div class="row mb-4">
+                      <div class="col-lg-4 col-sm-6">
+                          <table><tr>
+                          {% for w in allworlds.keys() %}
+                          <td> <a href="/world/{{w}}" class="link-success">{{allworlds[w]["name"]}}</a></td>
+                          {% endfor %}
+                          {% for w in allworlds.keys() %}
+                          <tr>
+                          {% for s in w["stories"] %}
+                          <td valign="top"> <a href="/read/{{s["id"]}}" class="link-success">{{s.name}}</a></td>
+                          {% endfor %}
+                        </tr>
+                          {% endfor %}
+                          </table>
+                          <!-- Form -->
+<!--                          <div class="mb-4">
+                             Populate Existing World
+                              <select class="form-select" id="country" aria-label="Default select example" onchange="this.options[this.selectedIndex].value && (window.location='/world/'+this.options[this.selectedIndex].value);">
+                                  <option selected>Select a world</option>
+                                  {% for i in worlds %}
+                                        <option value="{{i}}">{{worlds[i]}}</option>
+                                  {% endfor %}
+
+                              </select>
+                               
+                          </div>-->
+                      </div>
+                  </div> 
+           
+              </div>
+          </div>
+      </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

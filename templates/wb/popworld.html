@@ -14,7 +14,7 @@
     
       <div class="d-flex justify-content-between w-100 flex-wrap">
           <div class="mb-3 mb-lg-0">
-              <h1 class="h4">Write your Story: {{gen.name}}</h1>
+             
 
           </div>
           
@@ -23,53 +23,87 @@
 <div class="row mb-3" id="graph">
 </div>
   <div class="row mb-3">
-    Write Your Story:
-   <textarea rows="10" cols="4" style="width:80%">
-    {% for k in config['world'] %}
-      {% for kk in config['world'][k] %}{{" "* (kk.itempb | int) }}{{kk.item}}
-      {% endfor %}
-    {% endfor %}
-    
+    <form method="post" action="/story/" name="form">
+     <h1 class="h4">Write your Story: {{name}}</h1>
+   <textarea rows="10" cols="4" style="width:80%" name="story">
+    {% for c in config["world"].keys() %}{% for c2 in config["world"][c] %}{% if (c2.pb == c2.itempb) %}
+    {{" "*c2.itempb | int }}{{c2.item}}{%else%}
+
+    {{"  "*c2.itempb | int }}{{c2.item}} {% endif %}{% endfor %}{% endfor %}  
    </textarea>
+   <input type="hidden" name="populate_id" id="populate_id" value="{{populate_id}}"/>
+   <input type="hidden" name="world_id" id="world_id" value="{{world_id}}"/>
+   <input type="hidden" name="color1" id="color1" value=""/>
+   <input type="hidden" name="color2" id="color2" value=""/>
+   <button type="submit" class="btn btn-primary">Save</button>
+</form>
    <div class="row mb-3" id="bar">
 </div>
 
 
       <script>
-
+var color1 = "#000000";
+var color2 = "";
 // create data
 var data = []
 {% for c in config['all'] %}
   var k = {};
+
   {% for k in c.keys() %}
   try {
 
-    var i = {{c[k]}} * random(1,5)
-    
+   var i = {{c[k]}} * random(1,5)
+
   k["{{k}}"] = i;
 
-  alert("hi");
+  //alert("hi");
   }catch(e){
      k["{{k}}"] = "{{c[k]}}"; 
   }
       
+  var min = 1;
+  var max = 5;
 
   {% endfor %}
+  k["group"] = k["itempb"];
+  k["value"] =  Number(k["itempb"])
+  if (k["value"] < min){
+    min  =k["value"];
+  }
+   if (k["value"] > min){
+    max = k["value"];
+  }
+
+  k["variable"] = k["item"];
+
+
+  if (color2 != ""){
+    color1="#" + ((1<<24)*Math.random() | 0).toString(16)
+    $("#color1").val(color1);
+
+
+  }else{
+    color2="#" + ((1<<24)*Math.random() | 0).toString(16)
+$("#color2").val(color2);    
+
+  }
   data.push(k);
 {% endfor %}
 
+/*
+#it is there as it is 
 
-
-//var data = [{group: "animal", variable:"2",x: 0, y: 20, value:20}, {group: "animal", value: 150, x: 150, variable:"4", y: 150}, {group: "grass", variable:"4", value: 300, x: 300, y: 100}, {group: "grass", variable:"4", x: 450, y: 20, value:450}, {group:"insect", x: 600, y: 130, value:600, variable:"5"}];
-
+#paint on vs paint with 
+#boucerou
+*/
 // create svg element:
 
 var svg = d3.select("#graph").append("svg").attr("width", 800).attr("height", 400)
 
 // prepare a helper function
 var lineFunc = d3.line()
-  .x(function(d) { return d.item.length*100 })
-  .y(function(d) { return d.itempb*100});
+  .x(function(d) { return d.item.length*50 })
+  .y(function(d) { return d.itempb*50});
 
 // Add the path using this helper function
 svg.append('path')
@@ -82,27 +116,35 @@ if (data[d].item){
             svg.append('text')
              .attr('class', 'barsEndlineText')
              .attr('text-anchor', 'bottom')
-             .attr("x", data[d].item.length*100)
-             .attr("y", data[d].itempb*100)
+             .attr("x", (data[d].item.length*50))
+             .attr("y", (data[d].itempb*50)+d*10)
              .text(data[d].item) 
            }
            
     }
       //d3.select(".row").append("p").text("Hello World!");
 
+/*var data = [{group: "animal", variable:"2",x: 0, y: 20, value:20}, {group: "animal", value: 150, x: 150, variable:"4", y: 150}, {group: "grass", variable:"4", value: 300, x: 300, y: 100}, {group: "grass", variable:"4", x: 450, y: 20, value:450}, {group:"insect", x: 600, y: 130, value:600, variable:"5"}]; */
 
-
-var margin = {top:-800, right: 25, bottom: 30, left: 40},
-  width = 450 - margin.left - margin.right,
+var margin = {top: 80, right: 25, bottom: 30, left: 200},
+  width = 700 - margin.left - margin.right,
   height = 450 - margin.top - margin.bottom;
 
-var svg = d3.select("#bar").append("svg").attr("width", 800).attr("height", 400)
+// append the svg object to the body of the page
+var svg = d3.select("#bar")
+.append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+.append("g")
+  .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
 
 
-  var myGroups = d3.map(data, function(d){return d.item;}).keys()
-  var myVars = d3.map(data, function(d){return d.itempb;}).keys()
-console.log(myGroups);
-console.log(myVars);
+
+  // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+  var myGroups = d3.map(data, function(d){return d.group;}).keys()
+  var myVars = d3.map(data, function(d){return d.variable;}).keys()
+
   // Build X scales and axis:
   var x = d3.scaleBand()
     .range([ 0, width ])
@@ -125,17 +167,12 @@ console.log(myVars);
     .select(".domain").remove()
 
   // Build color scale
-  //var myColor = d3.scaleSequential()
-   // .interpolator(d3.interpolateInferno)
-    //.domain([1,100])
+    var myColor = d3.scaleLinear()
+    .range([color1,color2])//interpolator(d3.interpolateInferno)
+    .domain([min,max])
 
-  var myColor = d3.scaleLinear()
-  .domain([0, 100])
-  .range(["#00ff000", "#ff00ff"]);
-  console.log(myColor);
-
-  // create a toolti
-  var Tooltip = d3.select(".row")
+  // create a tooltip
+  var tooltip = d3.select("#my_dataviz")
     .append("div")
     .style("opacity", 0)
     .attr("class", "tooltip")
@@ -147,45 +184,63 @@ console.log(myVars);
 
   // Three function that change the tooltip when user hover / move / leave a cell
   var mouseover = function(d) {
-    Tooltip
+    tooltip
       .style("opacity", 1)
     d3.select(this)
       .style("stroke", "black")
       .style("opacity", 1)
   }
   var mousemove = function(d) {
-    Tooltip
-      .html(d.item)
+    tooltip
+      .html("The exact value of<br>this cell is: " + d.value)
       .style("left", (d3.mouse(this)[0]+70) + "px")
       .style("top", (d3.mouse(this)[1]) + "px")
   }
   var mouseleave = function(d) {
-    Tooltip
+    tooltip
       .style("opacity", 0)
     d3.select(this)
       .style("stroke", "none")
       .style("opacity", 0.8)
   }
 
-
   // add the squares
   svg.selectAll()
-    .data(data, function(d) {return d.item+':'+d.pbitem;})
+    .data(data, function(d) {return d.group+':'+d.variable;})
     .enter()
     .append("rect")
-      .attr("x", function(d) { return x(d.item) })
-      .attr("y", function(d) { return y(d.pbitem) })
+      .attr("x", function(d) { return x(d.group) })
+      .attr("y", function(d) { return y(d.variable) })
       .attr("rx", 4)
       .attr("ry", 4)
       .attr("width", x.bandwidth() )
       .attr("height", y.bandwidth() )
-      .style("fill", function(d) { return myColor(Math.round(Math.random(0,40),1))} )
+      .style("fill", function(d) { return myColor(d.value)} )
       .style("stroke-width", 4)
       .style("stroke", "none")
       .style("opacity", 0.8)
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave)
+
+
+// Add title to graph
+svg.append("text")
+        .attr("x", 0)
+        .attr("y", -50)
+        .attr("text-anchor", "left")
+        .style("font-size", "22px")
+        .text("Colorworld");
+
+// Add subtitle to graph
+svg.append("text")
+        .attr("x", 0)
+        .attr("y", -20)
+        .attr("text-anchor", "left")
+        .style("font-size", "14px")
+        .style("fill", "grey")
+        .style("max-width", 400)
+        .text("");
 
       </script>
   </div>

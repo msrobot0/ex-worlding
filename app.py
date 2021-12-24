@@ -39,59 +39,20 @@ class Writing(db.Model):
 
 @app.route("/")
 def index():
-    #db.session.query(World).delete()
-    #db.session.commit()
-
-    gen = "generate"
+    gen = "index"
+    name = "index"
     resdata ={}
     worlds = World.query.all()
-    name ="wah"
+    
     for w in worlds:
             resdata[w.id] = w.name
     return render_template('wb/index.html',worlds=resdata, name=name,gen=gen) #build world or #choose world
 
-def generate(request):
-    gen = "generate"
-    name ="generate"
-    msg = ""
-    id = 0
-    resdata ={}
+@app.route("/populate/", methods=['POST'])
+def new_populated_world():
     if request.method == 'POST': 
-        newdata ={}
-        data = request.form
-        name= request.form["name"] or "untitled"
-        for d in data.keys():
-            if len(data[d]) > 0:
-                if "category" in d:
-                    number = int(d.replace('category',''))
-                    category = data[d]
-                    options = data["options%d" % number]
-                    if category != "":
-                        newdata[category] = options
-                        
-            world = World(name=name, config=newdata)
-            db.session.add(world)
-            db.session.commit()
-            id = world.id
-        else: 
-            msg = "pick a world"
-
-       # worlds = World.query.all()
-       # for w in worlds:
-       #     resdata[w.id] = {"id":w.id,"name":w.name,"data":w.config}
-    
-     #filter(User.email.endswith('@example.com')).all()
-    return id
-
-
-
-@app.route("/populate/<world_id>/", methods=['GET', 'POST'])
-def newworld(world_id):
-    resdata ={}
-    gen = "hi"
-    name=  ""
-    config = {}
-    if request.method == 'POST': 
+        gen = "new populated world"
+        world_id = request.form['world_id']
         newdata ={"world":{},"all":[]} 
         data = request.form
         name= request.form["name"] or "untitled world from %s" % world_id
@@ -107,10 +68,6 @@ def newworld(world_id):
                     for i in range(0,items):
                         new_group= {"cat":cat,"items":items,"pb":pb,"item":data["i_%s_%s"%(cat,i)],"itempb":data["pb_%s_%s"%(cat,i)]}
                         newdata["all"].append(new_group)
-                        print("") 
-                        print(new_group)
-                        print("")
-                        print("pb")
                         if pb not in newdata["world"]:
                             newdata["world"][pb] = []
                         newdata["world"][pb].append(new_group)
@@ -119,67 +76,75 @@ def newworld(world_id):
         db.session.add(world)
         db.session.commit()
         id = world.id
-        print(id)
-    else:   
-        try:
-            world = Populate.query.get(world_id)
+        name = World.query.get(id).name    
+        return render_template(
+        'wb/popworld.html', gen=gen, name=name,config=world.config, populate_id=world.id,world_id=id)
 
-            if world is None:
-                index()
-            name = World.query.get(world.world_id).name
-        except:
-            index()
-    if world is None:
-            index()
-    print(world)
-    print(world.config)
+
+@app.route("/populate/<world_id>/", methods=['GET'])
+def get_populated_world(world_id):
+    gen = "get populated world"
+    world = Populate.query.get(world_id)
+    name = World.query.get(world.world_id).name
     return render_template(
-        'wb/popworld.html', gen=gen, name="name",config=world.config, world_id=world.world_id)
-    
+        'wb/popworld.html', gen=gen, name=name,config=world.config, populate_id=world.id,world_id=world_id)
 
-@app.route("/story/<populate_id>/")
-def story(populate_id):
-    msg = ""
-    gen = "populate"
+ 
+@app.route("/story/", methods=["POST"])
+def new_story():    
     if request.method == 'POST': 
+        gen = "new story"
         data = request.form
-        name= request.form["name"] or "piece from %s" % populate_id
         story = data["story"]
-        config = {}
-        for d in data.keys():
-                if d[0] == "c":
-                    count = data[d+"_c"]
-                    n = d[2:len(d)]
-                    link = data[d[0]]
-                    config[count] = {n:link}
-                    
-
-
-        world = Writing(name=name, populate_id=populate_id,config=data,creator="",story=story)
+        populate_id = data["populate_id"]
+        color1 = data["color1"]
+        color2 = data["color2"]
+        world_id = data["world_id"]
+        config = Populate.query.get(populate_id).config
+        name= " ".join(story[:25].split(" ")[0:-2])
+        world = Writing(name=name, populate_id=populate_id,config={"world_id":world_id,"color1":color1,"color2":color2,"config":config},creator="",story=story)
+        populate_id = world.id
         db.session.add(world)
         db.session.commit()
-    else:
-        try:
-            world = Writing.query.get(populate_id)
-        except:
-            index()
-    return render_template(
-    'wb/story.html', name=name,gen=gen,data=world.config,story=world.story)
+        name = world.name
+        return render_template(
+    'wb/worlds.html', name=name,gen=gen,config=world.config,story=world.story)
 
 
-@app.route("/world/<id>/", methods=['GET', 'POST'])
-def getWorlds(id):
-    gen = "read"
-    name ="read"
-    resdata ={}
-    if (id == "new"):
-        id =generate(request)
-    w = World.query.get(id)
-    name = w.name
-    gen = {"id":w.id,"name":w.name,"data":w.config, "cat":", ".join(list(w.config.keys()))}
-        
+@app.route("/story/<populate_id>/", methods=["GET"])
+def get_story(populate_id):
+    gen = "get story"
+    world = Writing.query.get(populate_id)
+    name = world.name
     return render_template(
-    'wb/genworld.html',name=name, gen=gen,allworlds=[])
+    'wb/worlds.html', name=name,gen=gen,config=world.config,story=world.story)
+
+
+@app.route("/read/", methods=["GET"])
+def read_all():
+    w = Writing.query.all()
+    stories = {}    
+    
+    for ww in w:
+        world_id = ww.config["world_id"] 
+        name = ww.name
+        if world_id not in stories: 
+            stories[world_id] = {"name":name,"stories":[]}
+        stories[world_id]["stories"].append({"name":name,"id":ww.id})
+        print(stories)
+    return render_template(
+    'wb/allworlds.html', allworlds=stories)
+
+@app.route("/read/<story_id>/", methods=['GET'])
+def read_one(story_id):
+    gen = "read one"
+
+    world = Writing.query.get(story_id)
+    name = world.name
+    
+    return render_template(
+'wb/worlds.html', name=name,gen=gen,config=world.config,story=world.story)
+
 
 if __name__ == "__main__":
     #   db.create_all() 
