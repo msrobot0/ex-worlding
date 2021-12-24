@@ -47,24 +47,34 @@ def index():
 def new_world():
     gen = "read"
     name ="read"
-    resdata ={}
-    if (id == "new"):
-        id =generate(request)
-    w = World.query.get(id)
-    name = w.name
-    gen = {"id":w.id,"name":w.name,"data":w.config, "cat":", ".join(list(w.config.keys()))}
+    data = request.form
+    name= request.form["name"] or "untitled"
+    for d in data.keys():
+        if len(data[d]) > 0:
+            if "category" in d:
+                number = int(d.replace('category',''))
+                category = data[d]
+                options = data["options%d" % number]
+                if category != "":
+                    newdata[category] = options
+                    
+    world = World(name=name, config=newdata)
+    db.session.add(world)
+    db.session.commit()
+    world_id = world.id
+      
+    name = world.name
+    gen = {"id":world.id,"name":world.name,"data":world.config, "cat":", ".join(list(world.config.keys()))}
         
     return render_template(
     'wb/genworld.html',name=name, gen=gen,allworlds=[])
 
-@app.route("/world/<world_id>", methods=['GET', 'POST'])
+@app.route("/world/<world_id>", methods=['GET'])
 def get_world(id):
     gen = "read"
     name ="read"
     resdata ={}
-    if (id == "new"):
-        id =generate(request)
-    w = World.query.get(id)
+    w = World.query.get(world_id)
     name = w.name
     gen = {"id":w.id,"name":w.name,"data":w.config, "cat":", ".join(list(w.config.keys()))}
         
@@ -170,5 +180,5 @@ def read_one(story_id):
 
 
 if __name__ == "__main__":
-    #   db.create_all() 
+    #db.create_all() 
     app.run()
