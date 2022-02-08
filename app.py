@@ -1,4 +1,4 @@
-from os import environ 
+from os import environ
 import sys
 from flask import Flask, flash, redirect, render_template, request, session, abort
 from flask_sqlalchemy import SQLAlchemy
@@ -58,15 +58,15 @@ def new_world():
                 options = data["options%d" % number]
                 if category != "":
                     newdata[category] = options
-                    
+
     world = World(name=name, config=newdata)
     db.session.add(world)
     db.session.commit()
     world_id = world.id
-    print(world_id)  
+    print(world_id)
     name = world.name
     gen = {"id":world.id,"name":world.name,"data":world.config, "cat":", ".join(list(world.config.keys()))}
-        
+
     return render_template(
     'wb/genworld.html',name=name, gen=gen,allworlds=[])
 
@@ -80,16 +80,16 @@ def get_world(world_id):
     w = World.query.get(world_id)
     name = w.name
     gen = {"id":w.id,"name":w.name,"data":w.config, "cat":", ".join(list(w.config.keys()))}
-        
+
     return render_template(
     'wb/genworld.html',name=name, gen=gen,allworlds=[])
 
 @app.route("/populate/", methods=['POST'])
 def new_populated_world():
-    if request.method == 'POST': 
+    if request.method == 'POST':
         gen = "new populated world"
         world_id = request.form['world_id']
-        newdata ={"world":{},"all":[]} 
+        newdata ={"world":{},"all":[]}
         data = request.form
         name= request.form["name"] or "untitled world from %s" % world_id
         print (data)
@@ -107,12 +107,12 @@ def new_populated_world():
                         if pb not in newdata["world"]:
                             newdata["world"][pb] = []
                         newdata["world"][pb].append(new_group)
-                        
+
         world = Populate(name=name, world_id=world_id,config=newdata,creator="")
         db.session.add(world)
         db.session.commit()
-        
-        name = World.query.get(world_id).name    
+
+        name = World.query.get(world_id).name
         return render_template(
         'wb/popworld.html', gen=gen, name=name,config=world.config, populate_id=world.id,world_id=world_id)
 
@@ -120,29 +120,37 @@ def new_populated_world():
 @app.route("/populate/<world_id>/", methods=['GET'])
 def get_populated_world(world_id):
     gen = "get populated world"
-    world = Populate.query.get(world_id)
-    name = World.query.get(world.world_id).name
+    p_world = Populate.query.get(world_id)
+    try:
+        name = World.query.get(p_world.world_id).name
+    except:
+        name = "NO PARENT"
+    print(name)
     return render_template(
-        'wb/popworld.html', gen=gen, name=name,config=world.config, populate_id=world.id,world_id=world_id)
+        'wb/popworld.html', gen=gen, name=name,config=p_world.config,
+        populate_id=p_world.id,world_id=p_world.world_id)
 
- 
+
 @app.route("/story/", methods=["POST"])
-def new_story():    
-    if request.method == 'POST': 
+def new_story():
+    if request.method == 'POST':
+        print("POSTING STORY")
         gen = "new story"
         data = request.form
         story = data["story"]
         populate_id = data["populate_id"]
         color1 = data["color1"]
         color2 = data["color2"]
-        
+
         populate = Populate.query.get(populate_id)
         config = populate.config
-        name= " ".join(story[:25].split(" ")[0:-2])
+        name = story.split("\n")[0].strip()[:100]
         world = Writing(name=name, populate_id=populate_id,config={"world_id":populate.world_id,"color1":color1,"color2":color2,"config":config},creator="",story=story)
         populate_id = world.id
         db.session.add(world)
         db.session.commit()
+        print(world.id)
+        print(world.name)
         name = world.name
         return render_template(
     'wb/worlds.html', name=name,gen=gen,config=world.config,story=world.story,populate_id=world.populate_id)
@@ -160,15 +168,25 @@ def get_story(populate_id):
 @app.route("/read/", methods=["GET"])
 def read_all():
     w = Writing.query.all()
-    stories = {}    
-    
+    stories = {}
+
     for ww in w:
-        world_id = ww.config["world_id"] 
+        world_id = ww.populate_id#config["world_id"]
         name = ww.name
-        if world_id not in stories: 
+        name = name.strip()
+        if len(name) < 5:
+                name = "nameless"
+        if world_id not in stories:
             stories[world_id] = {"name":name,"stories":[]}
         stories[world_id]["stories"].append({"name":name,"id":ww.id})
+        real_world = Populate.query.get(world_id)
+        real_world_name = real_world.name.strip()
+        if len(real_world_name) < 5:
+            real_world_name = "nameless"
+        stories[world_id]["parent"] = [real_world.world_id,real_world_name]
         print(stories)
+
+        #print(stories)
     return render_template(
     'wb/allworlds.html', allworlds=stories)
 
@@ -178,12 +196,15 @@ def read_one(story_id):
 
     world = Writing.query.get(story_id)
     name = world.name
-    
+    name= name.strip()
+    if len(name) < 5:
+        name = "nameless"
     return render_template(
-'wb/worlds.html', name=name,gen=gen,config=world.config,story=world.story)
+'wb/worlds.html',
+name=name,gen=gen,config=world.config,story=world.story,populate_id=world.populate_id)
 
 
 if __name__ == "__main__":
-    #db.drop_all() 
-    #db.create_all() 
+    #db.drop_all()
+    #db.create_all()
     app.run()

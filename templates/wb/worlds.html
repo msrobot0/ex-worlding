@@ -14,8 +14,13 @@
     
       <div class="d-flex justify-content-between w-100 flex-wrap">
           <div class="mb-3 mb-lg-0">
-             <h1 class="h4">Story: <b>{{name}}</b> ->  <a href="/populate/{{populate_id}}/" class="link-info">world</a> ->  <a class="link-info" href="/world/{{config['world_id']}}/">scaffolding</a></h1>
-            
+            <h1 class="h4"><b>{{name}}</b></h1>
+            <p>
+              <a class="link-info"
+                 href="/world/{{config['world_id']}}/">scaffolding</a> ->
+              <a href="/populate/{{populate_id}}/" class="link-info">world</a> 
+            </p>
+           
            
              <div style="width:100%;min-width:400px;padding:10px;border:5px black;background:#000">
               <pre style="background:white;">

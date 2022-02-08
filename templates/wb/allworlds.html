@@ -19,7 +19,13 @@
                        
                           {% for w in allworlds.keys() %}
                        <div>
-                          From <a href="/populate/{{w}}" class="link-info">{{w}}</a> Read: {% for s in allworlds[w]["stories"] %}<a href="/read/{{s["id"]}}" class="link-success">{{s.name}}</a>{%- if not loop.last %}, {%endif%}{% endfor %}
+                         <a class="link-success"
+                             href="/world/{{allworlds[w]["parent"][0]}}">{{allworlds[w]["parent"][1]}}</a> -> <a href="/populate/{{w}}"
+                                                                                                                                                        class="link-info">{{w}}</a>
+                           <ul> {% for s in allworlds[w]["stories"]
+                               %}<li><a href="/read/{{s["id"]}}"
+                                        class="link-success">{{s.name}}</a></li>{%
+                                    endfor %}</ul>
 
                         </div>
                           {% endfor %}

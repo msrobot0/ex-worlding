@@ -24,7 +24,13 @@
 </div>
   <div class="row mb-3">
     <form method="post" action="/story/" name="form">
-     <h1 class="h4">Write your Story: {{name}} ->  <a href="/populate/{{populate_id}}/" class="link-info">world</a> ->  <a class="link-info" href="/world/{{world_id}}/">scaffolding</a></h1>
+      <h1 class="h4">Write your Story</h1>
+      <p>
+      From <a
+                       href="/world/{{world_id}}/"
+                       class="link-info">{{name}}</a> 
+      </p>
+      <p>The first line is saved as the title - maximum 100 characters</p>
    <textarea rows="10" cols="4" style="width:80%" name="story">
     {% for c in config["world"].keys() %}{% for c2 in config["world"][c] %}{% if (c2.pb == c2.itempb) %}
     {{" "*c2.itempb | int }}{{c2.item}}{%else%}
