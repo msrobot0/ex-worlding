@@ -55,7 +55,7 @@
                           {% set max = gen.data[w] | int %}
                             <input type="hidden" name="c_{{w}}_{{max}}" id="c_{{w}}" value="">
                              <div class="input-group">
-                              <label >{{max}} {{w}}</label> ->
+                              <label >{{max}} {{w | replace("-"," ")}}</label> ->
                               <span  id="ct_{{w}}" name="ct_{{w}}"> # 
                         </span>
 

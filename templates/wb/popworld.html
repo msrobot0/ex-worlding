@@ -58,7 +58,7 @@ var data = []
   {% for k in c.keys() %}
   try {
 
-   var i = {{c[k]}} * random(1,5)
+   var i = '{{c[k]}}' * random(1,5)
 
   k["{{k}}"] = i;
 

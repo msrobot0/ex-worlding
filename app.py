@@ -54,7 +54,7 @@ def new_world():
         if len(data[d]) > 0:
             if "category" in d:
                 number = int(d.replace('category',''))
-                category = data[d]
+                category = data[d].replace(" ","-")
                 options = data["options%d" % number]
                 if category != "":
                     newdata[category] = options
